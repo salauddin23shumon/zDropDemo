@@ -3,7 +3,10 @@ package com.sss.zdropdemo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Insets;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -16,16 +19,20 @@ import android.view.WindowInsets;
 import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.sss.zdropdemo.utility.CartConverter;
@@ -34,15 +41,18 @@ import com.sss.zdropdemo.utility.CartConverter;
 public class ProductFragment extends Fragment {
 
 
-    LinearLayout linearLayout;
+    LinearLayout linearLayout, menuLayout;
     ImageView productImg, cartIV;
     Button cartBtn;
-    static int cart_count = 0;
+    int cart_count = 0;
+    int counter = 0;
     Context context;
     TextView menuTv;
     View mainView;
+    AppBarLayout appBarLayout;
     BottomSheetDialog dialog;
-
+    ImageButton backBtn;
+    Drawable backBtnBg, menuLayoutBg;
     String TAG="ProductFragment";
 
     public ProductFragment() {
@@ -66,12 +76,19 @@ public class ProductFragment extends Fragment {
         cartIV=mainView.findViewById(R.id.cartIV);
         productImg=mainView.findViewById(R.id.productIV);
         menuTv=mainView.findViewById(R.id.searchMenu);
+        appBarLayout=mainView.findViewById(R.id.appBarLayout);
+        backBtn=mainView.findViewById(R.id.backBtn);
+        menuLayout=mainView.findViewById(R.id.menuLL);
+
+        backBtnBg=backBtn.getBackground();
+        menuLayoutBg=menuLayout.getBackground();
+
 
         LayoutInflater itemInflater= LayoutInflater.from(context);
 
         for (int i=0; i<12; i++){
             View horizontalItemView= itemInflater.inflate(R.layout.horizontal_item,linearLayout,false);
-            ImageView itemImage = horizontalItemView.findViewById(R.id.hr_item_iv);
+            final ImageView itemImage = horizontalItemView.findViewById(R.id.hr_item_iv);
             itemImage.setImageResource(R.drawable.keds);
 
             itemImage.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +96,7 @@ public class ProductFragment extends Fragment {
                 public void onClick(View view) {
 //                    buildDialog(R.style.DialogAnimation, "dialog");
                     showDialog();
+                    itemImage.setBackground(ContextCompat.getDrawable(context, R.drawable.selected_item_green_border));
                 }
             });
 
@@ -126,16 +144,38 @@ public class ProductFragment extends Fragment {
                 popup.show(); //showing popup menu
             }
         });
+
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                boolean isShow = true;
+                int scrollRange = -1;
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {    //collapsed
+                    backBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.circle_shape_white));
+                    menuLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.capsule_shape_white));
+                    isShow=true;
+                } else if (isShow) {
+                    backBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.circle_shape_grey_tr));
+                    menuLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.capsule_shape_grey_tr));
+                    isShow = false;
+
+                }
+            }
+
+        });
     }
 
 
     private void showDialog() {
         dialog = new BottomSheetDialog(context, R.style.DialogTheme);
         View dialogView = LayoutInflater.from(context).
-                inflate(R.layout.dialog_layout, (ConstraintLayout) mainView.findViewById(R.id.dialog_container));
+                inflate(R.layout.dialog_layout, (ScrollView) mainView.findViewById(R.id.dialog_container));
 
         dialog.setCancelable(true);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+//        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         setDialogView(dialogView);
 
@@ -151,11 +191,14 @@ public class ProductFragment extends Fragment {
     private void setDialogView(View dialogView) {
 
         LinearLayout dialogHorizontalImgLL;
-        TextView closeTV;
-        Button closeBtn;
+        final TextView itemCounter;
+        Button closeBtn, incBtn, decBtn;
 
         dialogHorizontalImgLL=dialogView.findViewById(R.id.horizontalImgLayout);
         closeBtn=dialogView.findViewById(R.id.closeBtn);
+        decBtn=dialogView.findViewById(R.id.decrementBtn);
+        incBtn=dialogView.findViewById(R.id.incrementBtn);
+        itemCounter=dialogView.findViewById(R.id.quantity_counterTV);
 
         LayoutInflater itemInflater= LayoutInflater.from(context);
 
@@ -171,6 +214,24 @@ public class ProductFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+
+        incBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                counter++;
+                itemCounter.setText(String.valueOf(counter));
+            }
+        });
+
+        decBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (counter >= 1){
+                    counter--;
+                    itemCounter.setText(String.valueOf(counter));
+                }
             }
         });
     }
@@ -191,22 +252,24 @@ public class ProductFragment extends Fragment {
     private int getWindowHeight() {
         int height=0;
         int width=0;
-
+        DisplayMetrics displayMetrics = new DisplayMetrics();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowMetrics windowMetrics = ((Activity)context).getWindowManager().getCurrentWindowMetrics();
             Insets insets = windowMetrics.getWindowInsets()
                     .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
             return windowMetrics.getBounds().width() - insets.left - insets.right;
-        } else {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-
-//            ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             context.getDisplay().getRealMetrics(displayMetrics);
             height= displayMetrics.heightPixels;
             width=displayMetrics.widthPixels;
             Log.e(TAG, "getWindowHeight: h: "+ height + " w: " + width);
             return height-440;
+
+        }else {
+            ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            height= displayMetrics.heightPixels;
+            return height-240;
+
         }
     }
 

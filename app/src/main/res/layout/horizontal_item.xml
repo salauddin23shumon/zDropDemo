@@ -9,6 +9,8 @@
         android:layout_height="90dp"
         android:src="@drawable/keds"
         android:adjustViewBounds="true"
+        android:padding="3dp"
+        android:background="@drawable/grey_border"
         android:layout_margin="5dp"/>
 
 </LinearLayout>
