@@ -1,0 +1,44 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
+    android:viewportWidth="20.825"
+    android:viewportHeight="12.344"
+    android:width="20.825dp"
+    android:height="12.344dp">
+    <group
+        android:translateX="0.075"
+        android:translateY="-104.925">
+        <group
+            android:translateX="-156.795">
+            <path
+                android:pathData="M175.961 105h-10a1.508 1.508 0 0 0 -1.5 1.335l-1.058 9.178a1.509 1.509 0 0 0 1.5 1.681h10a1.508 1.508 0 0 0 1.5 -1.335l1.058 -9.178A1.509 1.509 0 0 0 175.961 105Zm-3.8 1.211l-0.3 2.168H169.6l0.3 -2.168Zm4.094 0.331L175.2 115.72a0.3 0.3 0 0 1 -0.294 0.263h-10a0.3 0.3 0 0 1 -0.294 -0.331l1.058 -9.178a0.3 0.3 0 0 1 0.294 -0.263h2.72L168.3 108.9a0.606 0.606 0 0 0 0.6 0.69h3.482a0.606 0.606 0 0 0 0.6 -0.521l0.4 -2.858h2.577A0.3 0.3 0 0 1 176.255 106.542Z"
+                android:fillColor="#4D4D4D"
+                android:strokeColor="#707070"
+                android:strokeWidth="0.15" />
+        </group>
+        <group
+            android:translateY="-192.027">
+            <path
+                android:pathData="M4.845 305.107H0.606a0.606 0.606 0 0 0 0 1.211H4.845a0.606 0.606 0 0 0 0 -1.211Z"
+                android:fillColor="#4D4D4D"
+                android:strokeColor="#707070"
+                android:strokeWidth="0.15" />
+        </group>
+        <group
+            android:translateX="-16.293"
+            android:translateY="-130.611">
+            <path
+                android:pathData="M21.138 241.107H17.585a0.606 0.606 0 1 0 0 1.211h3.553a0.606 0.606 0 1 0 0 -1.211Z"
+                android:fillColor="#4D4D4D"
+                android:strokeColor="#707070"
+                android:strokeWidth="0.15" />
+        </group>
+        <group
+            android:translateX="-31.648"
+            android:translateY="-69.195">
+            <path
+                android:pathData="M36.493 177.107H33.586a0.606 0.606 0 1 0 0 1.211h2.907a0.606 0.606 0 1 0 0 -1.211Z"
+                android:fillColor="#4D4D4D"
+                android:strokeColor="#707070"
+                android:strokeWidth="0.15" />
+        </group>
+    </group>
+</vector>

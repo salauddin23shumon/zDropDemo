@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">zDrop</string>
+    <string name="real_price"> <strike> BDT. 3,850 </strike> </string>
+    <string name="three_vertical_dot">&#8942;</string>
+
+
+    <string-array name="spinnerItems">
+        <item>4000</item>
+        <item>5000</item>
+        <item>6000</item>
+        <item>7000</item>
+    </string-array>
+</resources>
