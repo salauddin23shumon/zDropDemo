@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    android:id="@+id/dialog_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,13 +14,13 @@
             android:id="@+id/txtComingSoon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
+            android:padding="5dp"
             app:layout_constraintBottom_toTopOf="@+id/midLL"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:padding="5dp"
-            android:layout_marginTop="10dp">
+            app:layout_constraintTop_toTopOf="parent">
 
             <RelativeLayout
                 android:id="@+id/topRL"
@@ -32,17 +31,17 @@
                     android:id="@+id/productOptionTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
                     android:text="Product Option"
-                    android:textSize="14sp"
-                    android:layout_centerHorizontal="true" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/closeBtn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:padding="4dp"
-                    android:background="@drawable/ic_close"
                     android:layout_alignParentStart="true"
+                    android:background="@drawable/ic_close"
+                    android:padding="4dp"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </RelativeLayout>
@@ -50,24 +49,33 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp">
+                android:layout_height="wrap_content">
 
-                <com.makeramen.roundedimageview.RoundedImageView
-                    android:id="@+id/productIV"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:background="@drawable/round_shape"
-                    android:onClick="imgViewClick"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/product_main"
+                <ViewFlipper
+                    android:id="@+id/flipper"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
                     android:layout_margin="10dp"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:inAnimation="@android:anim/slide_in_left"
+                    android:outAnimation="@android:anim/slide_out_right"
                     app:layout_constraintLeft_toRightOf="@id/btnPrev"
                     app:layout_constraintRight_toLeftOf="@id/btnNxt"
-                    app:riv_corner_radius="20dip"
-                    app:layout_constraintHorizontal_weight="10"/>
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!--                    <com.makeramen.roundedimageview.RoundedImageView-->
+                    <!--                        android:id="@+id/productIV"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="match_parent"-->
+                    <!--                        android:adjustViewBounds="true"-->
+                    <!--                        android:background="@drawable/round_shape"-->
+                    <!--                        android:onClick="imgViewClick"-->
+                    <!--                        android:scaleType="centerCrop"-->
+                    <!--                        android:src="@drawable/product_main"-->
+                    <!--                        android:visibility="gone"-->
+                    <!--                        app:riv_corner_radius="20dip" />-->
+
+
+                </ViewFlipper>
 
                 <ImageButton
                     android:id="@+id/btnNxt"
@@ -79,11 +87,11 @@
                     android:padding="10dp"
                     android:src="@drawable/ic_arrow_right"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toRightOf="@id/productIV"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintHorizontal_weight=".5"/>
+                    app:layout_constraintHorizontal_weight=".5"
+                    app:layout_constraintLeft_toRightOf="@id/flipper"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
                     android:id="@+id/btnPrev"
@@ -93,13 +101,13 @@
                     android:background="@drawable/circle_shape_grey_tr"
                     android:onClick="arrowClick"
                     android:padding="10dp"
-                    android:src="@drawable/ic_arrow_left"
+                    android:src="@drawable/ic_arrow_left_white"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/productIV"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintHorizontal_weight=".5" />
+                    app:layout_constraintHorizontal_weight=".5"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/flipper"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -108,10 +116,10 @@
                 android:id="@+id/priceTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:padding="8dp"
                 android:text="BDT. 2,850 - BDT. 1,261"
                 android:textSize="23sp"
-                android:layout_gravity="center"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productIV" />
@@ -123,7 +131,7 @@
             android:id="@+id/midLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -141,6 +149,7 @@
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:padding="5dp">
 
                 <LinearLayout
@@ -329,8 +338,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="10dp"
-                android:layout_marginBottom="50dp">
+                android:padding="10dp">
 
                 <TextView
                     android:layout_width="0dp"
