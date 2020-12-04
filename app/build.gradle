@@ -31,6 +31,8 @@ dependencies {
 
     implementation 'com.makeramen:roundedimageview:2.3.0'
 
+    implementation 'com.github.aagitoEx:imageradiobutton:1.0'
+
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

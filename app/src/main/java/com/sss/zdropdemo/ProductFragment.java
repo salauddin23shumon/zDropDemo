@@ -18,10 +18,14 @@ import android.view.WindowInsets;
 import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -32,11 +36,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.sss.zdropdemo.adapter.HorizontalItemAdapter;
 import com.sss.zdropdemo.utility.CartConverter;
 import com.sss.zdropdemo.utility.ImageList;
 
@@ -47,16 +54,17 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.sss.zdropdemo.utility.ImageHelper.getRoundedCornerBitmap;
 
 
-public class ProductFragment extends Fragment {
+public class ProductFragment extends Fragment implements HorizontalItemAdapter.ShowProductDialog {
 
 
-    LinearLayout linearLayout, menuLayout;
-    ImageView productImg, cartIV, dialogImg;
+    LinearLayout  menuLayout;
+    ImageView productImg, cartIV;
     Button cartBtn;
     int cart_count = 0, counter = 0, h = 0, w = 0;
     Context context;
     TextView menuTv;
     View mainView;
+    RecyclerView horizontalRV;
     AppBarLayout appBarLayout;
     BottomSheetDialog dialog;
     ImageButton backBtn;
@@ -64,7 +72,11 @@ public class ProductFragment extends Fragment {
     ViewFlipper viewFlipper;
     ImageView itemImage;
     ImageButton btnNxt, btnPrev;
+    HorizontalItemAdapter adapter;
     String TAG = "ProductFragment";
+    List<ImageList> lists = new ArrayList<>();
+    List<ImageView> imageViewList;
+    int selected_position;
 
     public ProductFragment() {
         // Required empty public constructor
@@ -82,7 +94,7 @@ public class ProductFragment extends Fragment {
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_product, container, false);
         dialog = new BottomSheetDialog(context, R.style.DialogTheme);
-        linearLayout = mainView.findViewById(R.id.imgLayout);
+        horizontalRV = mainView.findViewById(R.id.horizontalRV);
         cartBtn = mainView.findViewById(R.id.btnCart);
         cartIV = mainView.findViewById(R.id.cartIV);
         productImg = mainView.findViewById(R.id.productIV);
@@ -94,27 +106,20 @@ public class ProductFragment extends Fragment {
         backBtnBg = backBtn.getBackground();
         menuLayoutBg = menuLayout.getBackground();
 
+        createImageList();
 
-        LayoutInflater itemInflater = LayoutInflater.from(context);
-
-        for (int i = 0; i < 12; i++) {
-            View horizontalItemView = itemInflater.inflate(R.layout.horizontal_item, linearLayout, false);
-            final ImageView itemImage = horizontalItemView.findViewById(R.id.hr_item_iv);
-            itemImage.setImageResource(R.drawable.keds_small);
-
-            itemImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showDialog();
-                    itemImage.setBackground(ContextCompat.getDrawable(context, R.drawable.selected_item_green_border));
-                }
-            });
-
-            linearLayout.addView(horizontalItemView);
-        }
+        adapter = new HorizontalItemAdapter(context, lists, this);
+        horizontalRV.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        horizontalRV.setAdapter(adapter);
 
 
         return mainView;
+    }
+
+    private void createImageList() {
+        for (int i = 0; i < 12; i++) {
+            lists.add(new ImageList(i, R.drawable.keds_small));
+        }
     }
 
     @Override
@@ -188,7 +193,7 @@ public class ProductFragment extends Fragment {
                 inflate(R.layout.dialog_layout, (ScrollView) mainView.findViewById(R.id.dialog_container));
 
         dialog.setCancelable(true);
-//        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         setDialogView(dialogView);
 
@@ -206,7 +211,8 @@ public class ProductFragment extends Fragment {
         LinearLayout dialogHorizontalImgLL;
         final TextView itemCounter;
         Button closeBtn, incBtn, decBtn;
-
+        selected_position = -1;
+        imageViewList = new ArrayList<>();
 
         List<ImageList> images = new ArrayList<>();
         images.add(new ImageList(0, R.drawable.jacket));
@@ -236,21 +242,32 @@ public class ProductFragment extends Fragment {
         for (final ImageList img : images) {
             View horizontalItemView = itemInflater.inflate(R.layout.horizontal_item, dialogHorizontalImgLL, false);
             itemImage = horizontalItemView.findViewById(R.id.hr_item_iv);
+            itemImage.setTag(img.getIndex());
             itemImage.setImageResource(img.getDrawableId());
+            itemImage.setClickable(true);
+            itemImage.setFocusable(true);
+            itemImage.setBackground(ContextCompat.getDrawable(context, R.drawable.grey_border));
             setImageInFlipper(img);
             dialogHorizontalImgLL.addView(horizontalItemView);
+
+
+            imageViewList.add(itemImage);
 
             itemImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     viewFlipper.setDisplayedChild(img.getIndex());
                     setButton();
-                    Log.d(TAG, "onclick: " + viewFlipper.getDisplayedChild());
+                    itemImage.setSelected(true);
+                    Log.d(TAG, "onclick: child" + viewFlipper.getDisplayedChild());
+                    setMarker(viewFlipper.getDisplayedChild());
                 }
             });
         }
 
-        Log.d(TAG, "setview: " + viewFlipper.getDisplayedChild());
+        Log.e(TAG, "setDialogView: size" + imageViewList.size());
+
+//        Log.d(TAG, "setview: " + viewFlipper.getDisplayedChild());
 
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -280,36 +297,64 @@ public class ProductFragment extends Fragment {
         btnNxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewFlipper.setInAnimation(context, android.R.anim.slide_in_left);
-                viewFlipper.setOutAnimation(context, android.R.anim.slide_out_right);
+                viewFlipper.setInAnimation(context, R.anim.slide_in_right);
+                viewFlipper.setOutAnimation(context, R.anim.slide_out_left);
                 viewFlipper.showNext();
                 setButton();
+                setMarker(viewFlipper.getDisplayedChild());
+//                Log.d(TAG, "setview: " + viewFlipper.getDisplayedChild());
             }
         });
 
         btnPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewFlipper.setInAnimation(context, R.anim.slide_in_right);
-                viewFlipper.setOutAnimation(context, R.anim.slide_out_left);
+                viewFlipper.setInAnimation(context, android.R.anim.slide_in_left);
+                viewFlipper.setOutAnimation(context, android.R.anim.slide_out_right);
                 viewFlipper.showPrevious();
                 setButton();
+                setMarker(viewFlipper.getDisplayedChild());
             }
         });
     }
 
     private void setImageInFlipper(ImageList img) {
         setButton();
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        ImageView imageView = new RoundedImageView(context);
+        TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+        ImageView imageView = new ImageView(context);
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), img.getDrawableId());
         imageView.setLayoutParams(params);
+        imageView.setAdjustViewBounds(true);
         imageView.setImageBitmap(getRoundedCornerBitmap(icon, 30));
         viewFlipper.addView(imageView);
 
         Log.d(TAG, "setImageInFlipper: " + viewFlipper.getDisplayedChild());
 
     }
+
+
+    private void setMarker(int pos) {
+
+        Log.e(TAG, "setMarker: " + pos + " " + selected_position);
+
+        if (selected_position == -1) {
+            selected_position = pos;
+            imageViewList.get(pos).setBackground(ContextCompat.getDrawable(context, R.drawable.selected_item_green_border));
+            Log.e(TAG, "selected_position: if " + selected_position);
+        } else if (selected_position > -1) {
+
+            Log.d(TAG, "elseif pos : " + pos);
+            imageViewList.get(pos).setBackground(ContextCompat.getDrawable(context, R.drawable.selected_item_green_border));
+
+            Log.e(TAG, "selected_position: elseif " + selected_position);
+            imageViewList.get(selected_position).setBackground(ContextCompat.getDrawable(context, R.drawable.grey_border));
+
+            selected_position = pos;
+        } else {
+            Log.e(TAG, "setMarker: else");
+        }
+    }
+
 
     private void setupFullHeight(BottomSheetDialog bottomSheetDialog) {
         FrameLayout bottomSheet = bottomSheetDialog.findViewById(R.id.design_bottom_sheet);
@@ -338,12 +383,12 @@ public class ProductFragment extends Fragment {
             height = displayMetrics.heightPixels;
             width = displayMetrics.widthPixels;
             Log.e(TAG, "getWindowHeight: h: " + height + " w: " + width);
-            return height - 440;
+            return (int) (height - (height * .15));
 
         } else {
             ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             height = displayMetrics.heightPixels;
-            return height - 240;
+            return (int) (height - (height * .10));
 
         }
     }
@@ -362,4 +407,9 @@ public class ProductFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onHorizontalItemClick(int pos) {
+        showDialog();
+        Log.e(TAG, "onHorizontalItemClick: " + pos);
+    }
 }
